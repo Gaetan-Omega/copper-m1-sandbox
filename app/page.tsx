@@ -1,6 +1,8 @@
+import { Tag } from "lucide-react";
 import Image from "next/image";
 import { SiteFooter } from "@/components/copper/site-footer";
 import { SiteHeader } from "@/components/copper/site-header";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -22,6 +24,9 @@ import {
 } from "@/lib/copper/catalog";
 
 const TAGLINE = "From raw ideas to refined answers.";
+
+// The product card that gets a "Sale" tag on its image.
+const SALE_PRODUCT_ID = "copper-notes";
 
 const CUTOUT_ALT: Record<string, string> = {
   "copper-home": "Copper Home, a copper-colored AI smart speaker",
@@ -103,7 +108,13 @@ function ProductCard({ product }: { product: Product }) {
   return (
     <Card data-testid="product-card" data-product={product.id}>
       <CardHeader>
-        <div className="bg-secondary mb-2 rounded-xl p-4">
+        <div className="bg-secondary relative mb-2 rounded-xl p-4">
+          {product.id === SALE_PRODUCT_ID && (
+            <Badge className="absolute top-3 right-3 z-10 h-7 -rotate-6 gap-1.5 px-3 text-sm font-bold shadow-md">
+              <Tag aria-hidden="true" className="-rotate-90" />
+              Sale
+            </Badge>
+          )}
           <Image
             src={product.cutout}
             alt={CUTOUT_ALT[product.id] ?? product.name}
