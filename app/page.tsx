@@ -4,6 +4,14 @@ import { SiteHeader } from "@/components/copper/site-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
   formatMemory,
   formatNotesHours,
   formatUsd,
@@ -37,6 +45,59 @@ const LIFESTYLE: Record<string, { alt: string; caption: string }> = {
 
 const lifestyleKey = (path: string) =>
   path.split("/").pop()!.replace(/\.png$/, "");
+
+// Side-by-side comparison; every value comes from the catalog.
+function ComparisonBox({ products }: { products: Product[] }) {
+  const rows: { label: string; value: (product: Product) => React.ReactNode }[] =
+    [
+      { label: "Type", value: (product) => product.type },
+      { label: "Price", value: (product) => formatUsd(product.priceUsd) },
+      { label: "Colors", value: (product) => product.colors.join(", ") },
+      {
+        label: "Key features",
+        value: (product) => (
+          <ul className="space-y-1">
+            {product.features.map((feature) => (
+              <li key={feature.name}>{feature.name}</li>
+            ))}
+          </ul>
+        ),
+      },
+    ];
+  return (
+    <Card className="mt-10" aria-label="Compare Copper products">
+      <CardHeader>
+        <CardTitle className="text-2xl">Compare the products</CardTitle>
+      </CardHeader>
+      <CardContent className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-32" />
+              {products.map((product) => (
+                <TableHead key={product.id} className="text-primary text-base">
+                  {product.name}
+                </TableHead>
+              ))}
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {rows.map((row) => (
+              <TableRow key={row.label}>
+                <TableCell className="font-semibold">{row.label}</TableCell>
+                {products.map((product) => (
+                  <TableCell key={product.id} className="whitespace-normal">
+                    {row.value(product)}
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+}
 
 function ProductCard({ product }: { product: Product }) {
   return (
@@ -134,6 +195,7 @@ export default function Home() {
               <ProductCard key={product.id} product={product} />
             ))}
           </div>
+          <ComparisonBox products={products} />
         </section>
 
         <section
